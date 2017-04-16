@@ -39,19 +39,26 @@ class PaypalBot():
 			"numero_tarjeta":["cardNumber","cardData_cardNumber","/cardData/cardNumber"],
 			"expiracion":["expiryDate","cardData_expiryDate","/cardData/expiryDate"],
 			"cseguridad":["csc","cardData_csc","/cardData/csc"],
-			"saltar_promocion":["exploreBenefits","skipPromoteCredit"]
+			"saltar_promocion":["exploreBenefits","skipPromoteCredit"],
+			"ir_a_nuevacuenta":["myaccountLink","exploreBenefits"]
 		}
 		#Url comunes de la pagina y registro
 		self.url_paypal = {
 			"usa":{
+				"home":"https://www.paypal.com/myaccount/home",
 				"registro":"https://www.paypal.com/us/signup/account?Z3JncnB0=",
-				"formulario_registro":"https://www.paypal.com/signup/create?Z3JncnB0=",
-				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
-				},
-			"ca":{
-				"registro":"https://www.paypal.com/ca/signup/account?Z3JncnB0=",
 				"formulario_registro":"https://www.paypal.com/signup/create",
-				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
+				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard",
+				"promocion":"https://www.paypal.com/signup/promoteCredit",
+				"success":"https://www.paypal.com/signup/success"
+			},
+			"ca":{
+				"home":"https://www.paypal.com/myaccount/home",
+				"registro":"https://www.paypal.com/ca/signup/account?Z3JncnB0=",
+				"formulario_registro":"https://www.paypal.com/signup/create?Z3JncnB0=",
+				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard",
+				"promocion":"https://www.paypal.com/signup/promoteCredit",
+				"success":"https://www.paypal.com/signup/success"
 			}
 		}
 
@@ -208,6 +215,17 @@ class PaypalBot():
 		if(self.Verificar(element)):
 			ActionChains(self.driver).move_to_element(element).click(element).perform()
 
+	def buscarEnCodigoFuente(self,strings):
+		if type(strings) == list:
+			for i in strings:
+				if i in str(self.driver.page_source):
+					return True
+		if type(strings) == str:
+			if i in str(self.driver.page_source):
+				return True
+		
+		return False
+				
 	
 	def crear_cuenta(self, datos_usuario):	
 		input("Presionar enter para comenzar la creacion")
@@ -283,7 +301,7 @@ class PaypalBot():
 		
 		def quinto():
 			print("[+]LLendo a nueva cuenta")
-			boton_ir = self.Buscar_Elemento("myaccountLink", "name")
+			boton_ir = self.Buscar_Elemento("ir_a_nuevacuenta", "name")
 			self.aClic(boton_ir)
 			
 		iniciado = True
@@ -293,33 +311,33 @@ class PaypalBot():
 		p4 = False
 		p5 = False
 		while(iniciado):
-			if(p1 and p2 and p3 and p4 and p5):
-				print("TODOS LOS PASOS COMPLETADOS CORRECTAMENTE")
+			if(p5 is True):
 				iniciado = False
 			if(p1 is False):
 				primero()
+				#if(self.buscarEnCodigoFuente("
 				p1 = True
 			elif(p2 is False):
-				if("Complete la siguiente" not in str(self.driver.page_source)):
-					if("Just a few more " not in str(self.driver.page_source)):
+				textos_pagina_formulario = ["Complete la siguiente","Just a few more "]
+				if(self.buscarEnCodigoFuente(textos_pagina_formulario) == False):
 						p2 = True
 				else:
 					segundo()
 			elif(p3 is False):
-				if("Asocie una tarjeta" not in str(self.driver.page_source)):
-					if("Link a debit" not in str(self.driver.page_source)):
+				textos_pagina_tarjeta = ["Asocie una tarjeta","Link a debit"]
+				if(self.buscarEnCodigoFuente(textos_pagina_tarjeta) == False):
 						p3 = True
 				else:
 					tercero()
 			elif(p4 is False):
-				if("Viva el presente" not in str(self.driver.page_source)):
-					if("Live in the" not in str(self.driver.page_source)):
+				textos_pagina_sucess = ["Viva el presente","Live in the"]
+				if(self.buscarEnCodigoFuente(textos_pagina_sucess) == False):
 						p4 = True
 				else:
 					cuarto()
 			elif(p5 is False):
-				if("Explorar ofertas" not in str(self.driver.page_source)):
-					if("Explore" not in str(self.driver.page_source)):
+				textos_pagina_explorar_ofertas = ["Explorar ofertas","Realice compras","Explore"]
+				if(self.buscarEnCodigoFuente(textos_pagina_explorar_ofertas) == False  ):
 						p5 = True
 				else:
 					quinto()
