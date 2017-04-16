@@ -17,6 +17,30 @@ class PaypalBot():
 			1:"El navegador aun no ah sido iniciado.",
 			2:"El navegador o el elemento no estan disponibles."
 		}
+		self.elementos_paypal = {
+			
+			"firtsName":["firstName","paypalAccountData_firstName","/paypalAccountData/firstName",],
+			"lastName":["lastName","/paypalAccountData/lastName","paypalAccountData_lastName"],
+			"address":["address1","paypalAccountData_address1","/paypalAccountData/address/address1"],
+			"city":["city","paypalAccountData_city","/paypalAccountData/address/city"],
+			"postal":["postalCode","paypalAccountData_zip","/paypalAccountData/address/zip"],
+			"phoneNumber":["phoneNumber","/paypalAccountData/phoneNumber","paypalAccountData_phone"],
+			
+			"email":["email","paypalAccountData_email"],
+			"password":["password","paypalAccountData_password"],
+			"cpassword":["confirmPassword","paypalAccountData_confirmPassword"],
+			"seguir_logeado":["stayLoggedIn","paypalAccountData_oneTouchCheckbox"],
+			"next_primero":["_eventId_personal","/appData/action"],
+			"state":["paypalAccountData_state","state","/paypalAccountData/address/state"],
+			"terminos":["termsAgree","paypalAccountData_tcpa","terms","marketingOptIn","terms_checkbox","terms_checkbox"],
+			"crear":["submitBtn","_eventId_continue","/appData/action"],
+			"asociar":["_eventId_continue","submitBtn","/appData/action"],
+			"ocupacion":["occupation"],
+			"numero_tarjeta":["cardNumber","cardData_cardNumber","/cardData/cardNumber"],
+			"expiracion":["expiryDate","cardData_expiryDate","/cardData/expiryDate"],
+			"cseguridad":["csc","cardData_csc","/cardData/csc"],
+			"saltar_promocion":["exploreBenefits","skipPromoteCredit"]
+		}
 	
 	def Verificar(self, element=True):#Verificar elemento y driver encendido
 		if(self.driver == None):
@@ -61,6 +85,28 @@ class PaypalBot():
 	def irAdelante(self):
 		if(Verificar):
 			self.driver.forward()
+			#Busca elementos en la pagina
+	def Buscar_Elemento(self,nombre,tipo="id"):
+			""" Si no encuentra un elemento por id busca otro
+				Esta funcion cubre la dinamica del sitio de paypal
+				a la hora de renombrar elementos.
+			"""
+			elemento = None
+			if(nombre in self.elementos_paypal):
+				for i in self.elementos_paypal[nombre]:
+					elemento = self.bElemento(i, tipo)
+					if(elemento != False):
+						print("  [v]Se localizo el elemento %s correctamente."%nombre)
+						return elemento
+					time.sleep(2)
+			tipos_ = ["name","id"]
+			print("[+]Buscando elemento:\"%s\" por todos los tipos.."%(nombre))
+			for tipo in tipos_:
+				elemento = self.bElemento(nombre, tipo)
+				if(elemento):
+					return elemento
+			print("  [x]No se encontro el elemento \"%s\""%nombre)
+			return elemento
 	
 	def bElemento(self,name,Type="id"):#Buscar elemento por tipo
 		print("[+]Buscando elemento:\"%s\" por %s"%(name,Type))
@@ -153,30 +199,7 @@ class PaypalBot():
 			print("Introduzca los datos de usuario.")
 			return False
 		#Nombres de elementos y alternativos (debido a la dinamica de la pagina en cada carga)
-		elementos_paypal = {
-			
-			"firtsName":["firstName","paypalAccountData_firstName","/paypalAccountData/firstName",],
-			"lastName":["lastName","/paypalAccountData/lastName","paypalAccountData_lastName"],
-			"address":["address1","paypalAccountData_address1","/paypalAccountData/address/address1"],
-			"city":["city","paypalAccountData_city","/paypalAccountData/address/city"],
-			"postal":["postalCode","paypalAccountData_zip","/paypalAccountData/address/zip"],
-			"phoneNumber":["phoneNumber","/paypalAccountData/phoneNumber","paypalAccountData_phone"],
-			
-			"email":["email","paypalAccountData_email"],
-			"password":["password","paypalAccountData_password"],
-			"cpassword":["confirmPassword","paypalAccountData_confirmPassword"],
-			"seguir_logeado":["stayLoggedIn","paypalAccountData_oneTouchCheckbox"],
-			"next_primero":["_eventId_personal","/appData/action"],
-			"state":["paypalAccountData_state","state","/paypalAccountData/address/state"],
-			"terminos":["termsAgree","paypalAccountData_tcpa","terms","marketingOptIn","terms_checkbox","terms_checkbox"],
-			"crear":["submitBtn","_eventId_continue","/appData/action"],
-			"asociar":["_eventId_continue","submitBtn","/appData/action"],
-			"ocupacion":["occupation"],
-			"numero_tarjeta":["cardNumber","cardData_cardNumber","/cardData/cardNumber"],
-			"expiracion":["expiryDate","cardData_expiryDate","/cardData/expiryDate"],
-			"cseguridad":["csc","cardData_csc","/cardData/csc"],
-			"saltar_promocion":["exploreBenefits","skipPromoteCredit"]
-		}
+
 		#Url comunes de la pagina y registro
 		url_paypal = {
 			"usa":{
@@ -190,28 +213,7 @@ class PaypalBot():
 				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
 			}
 		}
-		#Busca elementos en la pagina
-		def Buscar_Elemento(nombre,tipo="id"):
-			""" Si no encuentra un elemento por id busca otro
-				Esta funcion cubre la dinamica del sitio de paypal
-				a la hora de renombrar elementos.
-			"""
-			elemento = None
-			if(nombre in elementos_paypal):
-				for i in elementos_paypal[nombre]:
-					elemento = self.bElemento(i, tipo)
-					if(elemento != False):
-						print("  [v]Se localizo el elemento %s correctamente."%nombre)
-						return elemento
-					time.sleep(2)
-			tipos_ = ["name","id"]
-			print("[+]Buscando elemento:\"%s\" por todos los tipos.."%(nombre))
-			for tipo in tipos_:
-				elemento = self.bElemento(nombre, tipo)
-				if(elemento):
-					return elemento
-			print("  [x]No se encontro el elemento \"%s\""%nombre)
-			return elemento
+
 		
 		"""Se inicia la automatizacion"""
 		self.Iniciar()
@@ -220,15 +222,15 @@ class PaypalBot():
 		
 		def primero():
 			#1 Elementos formulario inicial
-			caja_email 				=	Buscar_Elemento("email")
-			caja_password 			= 	Buscar_Elemento("password")
-			caja_confirm_password	=   Buscar_Elemento("cpassword")
-			check_staylogin 		=	Buscar_Elemento("seguir_logeado")
+			caja_email 				=	self.Buscar_Elemento("email")
+			caja_password 			= 	self.Buscar_Elemento("password")
+			caja_confirm_password	=   self.Buscar_Elemento("cpassword")
+			check_staylogin 		=	self.Buscar_Elemento("seguir_logeado")
 			self.tKey(caja_email, datos_usuario["email"])
 			self.tKey(caja_password, datos_usuario["passw"])
 			self.tKey(caja_confirm_password, datos_usuario["passw"])
 			self.sSeleccionarElemento(check_staylogin)
-			boton_next_primero		=	Buscar_Elemento("next_primero")
+			boton_next_primero		=	self.Buscar_Elemento("next_primero")
 			nextt = self.aClic(boton_next_primero)
 			if(nextt == False):
 				self.Ir(url_paypal[pais]["formulario_registro"])
@@ -238,28 +240,28 @@ class PaypalBot():
 		def segundo():
 			#2 Elementos formulario personal
 			print("[+]Pasando al formulario de datos..\n\n")
-			primer_nombre			= 	Buscar_Elemento("firtsName")
+			primer_nombre			= 	self.Buscar_Elemento("firtsName")
 			self.tKey(primer_nombre, datos_usuario["firtsName"])
-			segundo_nombre 			= 	Buscar_Elemento("lastName")
+			segundo_nombre 			= 	self.Buscar_Elemento("lastName")
 			self.tKey(segundo_nombre, datos_usuario["lastName"])
-			calle 					=	Buscar_Elemento("address")
+			calle 					=	self.Buscar_Elemento("address")
 			self.tKey(calle,datos_usuario["address"])
-			ciudad 					=	Buscar_Elemento("city")
+			ciudad 					=	self.Buscar_Elemento("city")
 			self.tKey(ciudad,datos_usuario["city"])
-			postal 					= 	Buscar_Elemento("postal")
+			postal 					= 	self.Buscar_Elemento("postal")
 			self.tKey(postal,datos_usuario["postalCode"])
-			telefono				=	Buscar_Elemento("phoneNumber")
+			telefono				=	self.Buscar_Elemento("phoneNumber")
 			self.tKey(telefono,datos_usuario["phoneNumber"])
 			#seleccionar estado
-			estado 	=	Buscar_Elemento("state")
+			estado 	=	self.Buscar_Elemento("state")
 			self.sSeleccionarElemento(estado)
 			print("Aceptando terminos..")
 			self.tKey2(estado, datos_usuario["state"])
 			self.sKey(Keys.RETURN, estado)
 			#aceptar terminos
-			terminos = Buscar_Elemento("terminos")
+			terminos = self.Buscar_Elemento("terminos")
 			self.sSeleccionarElemento(terminos)
-			boton_aceptar = 		Buscar_Elemento("crear")
+			boton_aceptar = 		self.Buscar_Elemento("crear")
 			crear = self.aClic(boton_aceptar)
 			#if(crear == False):
 			#	self.Ir(url_paypal[pais]["aniadir_tarjeta"])
@@ -267,10 +269,10 @@ class PaypalBot():
 		def tercero():		
 			#3 Elementos eleccion tarjeta
 			print("[+]Pasando a pagina de registro de tarjeta..\n")
-			numero_tarjeta  		=  	Buscar_Elemento("numero_tarjeta","name")
-			expiracion 				= 	Buscar_Elemento("expiracion")
-			codigo_seg  			= 	Buscar_Elemento("cseguridad")
-			boton_asociar			= 	Buscar_Elemento("asociar")
+			numero_tarjeta  		=  	self.Buscar_Elemento("numero_tarjeta","name")
+			expiracion 				= 	self.Buscar_Elemento("expiracion")
+			codigo_seg  			= 	self.Buscar_Elemento("cseguridad")
+			boton_asociar			= 	self.Buscar_Elemento("asociar")
 			self.tKey(numero_tarjeta, datos_usuario["tarjeta"]["numero"])
 			self.tKey(expiracion, datos_usuario["tarjeta"]["fecha"]["fecha_acortada"])
 			self.tKey(codigo_seg, datos_usuario["tarjeta"]["codigo_seg"])
@@ -278,12 +280,12 @@ class PaypalBot():
 		
 		def cuarto():
 			print("[+]Salteando promocion.")
-			boton_saltar = Buscar_Elemento("saltar_promocion","name")
+			boton_saltar = self.Buscar_Elemento("saltar_promocion","name")
 			self.aClic(boton_saltar)
 		
 		def cinco():
 			print("[+]LLendo a nueva cuenta")
-			boton_ir = Buscar_Elemento("myaccountLink", "name")
+			boton_ir = self.Buscar_Elemento("myaccountLink", "name")
 			self.aClic(boton_ir)
 			
 		iniciado = True
@@ -332,10 +334,4 @@ class PaypalBot():
 				}
 		self.Salir()
 		return cuenta
-
-
-
-
-
-
 
