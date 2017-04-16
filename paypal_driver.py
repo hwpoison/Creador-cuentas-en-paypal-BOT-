@@ -2,10 +2,10 @@
 #Codigo by sRBill96 para netixzen.blogspot.com.ar
 import os
 import time
-from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -18,7 +18,7 @@ class PaypalBot():
 			2:"El navegador o el elemento no estan disponibles."
 		}
 		self.elementos_paypal = {
-			
+			#Nombres de elementos y alternativos (debido a la dinamica de la pagina en cada carga
 			"firtsName":["firstName","paypalAccountData_firstName","/paypalAccountData/firstName",],
 			"lastName":["lastName","/paypalAccountData/lastName","paypalAccountData_lastName"],
 			"address":["address1","paypalAccountData_address1","/paypalAccountData/address/address1"],
@@ -41,6 +41,20 @@ class PaypalBot():
 			"cseguridad":["csc","cardData_csc","/cardData/csc"],
 			"saltar_promocion":["exploreBenefits","skipPromoteCredit"]
 		}
+		#Url comunes de la pagina y registro
+		self.url_paypal = {
+			"usa":{
+				"registro":"https://www.paypal.com/us/signup/account?Z3JncnB0=",
+				"formulario_registro":"https://www.paypal.com/signup/create?Z3JncnB0=",
+				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
+				},
+			"ca":{
+				"registro":"https://www.paypal.com/ca/signup/account?Z3JncnB0=",
+				"formulario_registro":"https://www.paypal.com/signup/create",
+				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
+			}
+		}
+
 	
 	def Verificar(self, element=True):#Verificar elemento y driver encendido
 		if(self.driver == None):
@@ -195,31 +209,19 @@ class PaypalBot():
 			ActionChains(self.driver).move_to_element(element).click(element).perform()
 
 	
-	def crear_cuenta(self, datos_usuario):
+	def crear_cuenta(self, datos_usuario):	
+		input("Presionar enter para comenzar la creacion")
+		archivo_cuentas = None
+		nombre_archivo = "cuenta_creadas.txt"
+		archivo_cuentas = open("cuenta_creadas.txt", "a+") 
 		if(datos_usuario == None):
 			print("Introduzca los datos de usuario.")
 			return False
-		#Nombres de elementos y alternativos (debido a la dinamica de la pagina en cada carga)
 
-		#Url comunes de la pagina y registro
-		url_paypal = {
-			"usa":{
-				"registro":"https://www.paypal.com/us/signup/account?Z3JncnB0=",
-				"formulario_registro":"https://www.paypal.com/signup/create?Z3JncnB0=",
-				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
-				},
-			"ca":{
-				"registro":"https://www.paypal.com/ca/signup/account?Z3JncnB0=",
-				"formulario_registro":"https://www.paypal.com/signup/create",
-				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
-			}
-		}
-
-		
 		"""Se inicia la automatizacion"""
 		self.Iniciar()
 		pais = datos_usuario["paypal_loc"]
-		self.Ir(url_paypal[pais]["registro"])
+		self.Ir(self.url_paypal[pais]["registro"])
 		
 		def primero():
 			#1 Elementos formulario inicial
@@ -233,9 +235,6 @@ class PaypalBot():
 			self.sSeleccionarElemento(check_staylogin)
 			boton_next_primero		=	self.Buscar_Elemento("next_primero")
 			nextt = self.aClic(boton_next_primero)
-			if(nextt == False):
-				self.Ir(url_paypal[pais]["formulario_registro"])
-			
 	
 
 		def segundo():
@@ -264,8 +263,6 @@ class PaypalBot():
 			self.sSeleccionarElemento(terminos)
 			boton_aceptar = 		self.Buscar_Elemento("crear")
 			crear = self.aClic(boton_aceptar)
-			#if(crear == False):
-			#	self.Ir(url_paypal[pais]["aniadir_tarjeta"])
 		
 		def tercero():		
 			#3 Elementos eleccion tarjeta
@@ -284,7 +281,7 @@ class PaypalBot():
 			boton_saltar = self.Buscar_Elemento("saltar_promocion","name")
 			self.aClic(boton_saltar)
 		
-		def cinco():
+		def quinto():
 			print("[+]LLendo a nueva cuenta")
 			boton_ir = self.Buscar_Elemento("myaccountLink", "name")
 			self.aClic(boton_ir)
@@ -325,13 +322,15 @@ class PaypalBot():
 					if("Explore" not in str(self.driver.page_source)):
 						p5 = True
 				else:
-					cinco()
+					quinto()
 
 		print("Cuenta creada:")
 		
 		cuenta = {
 				"email":datos_usuario["email"],
 				"pass":datos_usuario["passw"]
-				}
+		}
 		self.Salir()
+		print("Cuenta creada:",cuenta)
+		archivo_cuentas.writelines("%s:%s\n"%(cuenta["email"], cuenta["pass"]))
 		return cuenta
