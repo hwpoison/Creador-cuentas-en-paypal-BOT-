@@ -23,43 +23,45 @@ class Generador_datos():
 	
 	def generar_datos(self):
 		p = self.persona_azar()
-		
-		primer_nombre = self.datos["firtsName"]
-		if primer_nombre == None:
+		#Generar primer nombre
+		if self.datos["firtsName"] == None:
 			self.datos["firtsName"] = p[1]
+			
+		#Generar segundo nombre
 		if self.datos["lastName"]  == None:
 			self.datos["lastName"]  = p[2]
 		
+		#Generar direccion calle
 		if self.datos["address"]  == None:
 			self.datos["address"]  = p[3]
 		else:
-			#reemplazar x por numero aleatorios
 			self.datos["address"] = self.remplazar_x(self.datos["address"])
-								
+		#Generar ciudad				
 		if self.datos["city"] == None:
-			self.datos["city"] = p[6]
-
+			self.datos["city"] =	 p[6]
+		#Generar codigo postal
 		if self.datos["postalCode"] == None:
 			self.datos["postalCode"] = p[8]
-
+		#Generar numero telefono
 		if self.datos["phoneNumber"] == None:
 			self.datos["phoneNumber"] = p[5]
 		else:
 			self.datos["phoneNumber"] = self.remplazar_x(self.datos["phoneNumber"])
-
+		#Generar email
 		if self.datos["email"] == None:
 			arroba = p[9].index("@")
 			self.datos["email"] = p[9][:arroba] + str(random.randint(0,1990)) +  "@gmail.com"
-
+		#Generar contraseña
 		if self.datos["passw"] == None:
 			self.datos["passw"] = "holasoyun"+str(random.randint(100,300))
 		else:
 			self.datos["passw"] = self.remplazar_x(self.datos["passw"])
-		
+		#Generar estado
 		if self.datos["state"] == None:
 			self.datos["state"] = "NY"
-			
+		#Generar datos tarjeta
 		self.datos["tarjeta"] = Generar_tarjeta(self.datos["BIN"],1).dic_tarjetas[0]
+		
 		print("Datos generado:")
 		for i in self.datos:
 			print(i,":",self.datos[i])
@@ -119,3 +121,4 @@ datos = {
 		
 ini = Generador_datos(datos)
 ini.crear_paypal()
+
