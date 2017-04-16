@@ -86,7 +86,8 @@ class PaypalBot():
 		if(Verificar):
 			self.driver.forward()
 			#Busca elementos en la pagina
-	def Buscar_Elemento(self,nombre,tipo="id"):
+
+	def Buscar_Elemento(self,nombre,tipo="id"):#Buscar elemento 
 			""" Si no encuentra un elemento por id busca otro
 				Esta funcion cubre la dinamica del sitio de paypal
 				a la hora de renombrar elementos.
@@ -108,7 +109,7 @@ class PaypalBot():
 			print("  [x]No se encontro el elemento \"%s\""%nombre)
 			return elemento
 	
-	def bElemento(self,name,Type="id"):#Buscar elemento por tipo
+	def bElemento(self,name,Type="id"):#Buscar elemento por tipo especifico
 		print("[+]Buscando elemento:\"%s\" por %s"%(name,Type))
 		try:
 			if(Type == "id"):
@@ -142,7 +143,7 @@ class PaypalBot():
 			element.send_keys(text)
 			print("Se ah completado el campo %s con:\"%s\""%(str(element.get_attribute("name")),str(text[0:8])));
 	
-	def tKey2(self, element, text):#Tipea texto sobre elemento pero no borra(para check)
+	def tKey2(self, element, text):#Tipea texto sobre elemento pero no borra(para listabox)
 		if(self.Verificar(element) and text != None):
 			element.send_keys(text)
 			print("Se ah completado el campo %s con:\"%s\""%(str(element.get_attribute("name")),str(text[0:8])));
@@ -334,4 +335,3 @@ class PaypalBot():
 				}
 		self.Salir()
 		return cuenta
-
