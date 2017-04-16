@@ -1,3 +1,5 @@
+#!/usr/bin/env Python 3.6
+#Codigo by sRBill96 para netixzen.blogspot.com.ar
 import os
 import json
 import random
@@ -120,3 +122,4 @@ class Generador_datos():
 					encontrado = True
 			numero_azar+=1
 		return e
+
