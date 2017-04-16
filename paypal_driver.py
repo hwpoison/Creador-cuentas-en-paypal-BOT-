@@ -41,9 +41,7 @@ class PaypalBot():
 		options1.add_argument("start-maximized");
 		#options1.binary_location = "C:\\Program Files\\Hola\\app\\chromium\\"
 		self.driver = webdriver.Chrome(self.driver_name,chrome_options=options1)
-			
 
-	
 	def cerrar(self):
 		print("Saliendo de Google Chrome")
 		self.driver.quit()
@@ -113,6 +111,10 @@ class PaypalBot():
 			print("Presionando ",KEY)
 			element.send_keys(KEY)
 			
+	def Salir(self):
+		print("Cerrando..")
+		self.driver.close()
+		
 	def aClic(self, element):#Hacer click sobre elemento
 		try:
 			if(self.Verificar(element)):
@@ -150,8 +152,9 @@ class PaypalBot():
 		if(datos_usuario == None):
 			print("Introduzca los datos de usuario.")
 			return False
+		#Nombres de elementos y alternativos (debido a la dinamica de la pagina en cada carga)
 		elementos_paypal = {
-			# 1 Pagina email, pass pass next
+			
 			"firtsName":["firstName","paypalAccountData_firstName","/paypalAccountData/firstName",],
 			"lastName":["lastName","/paypalAccountData/lastName","paypalAccountData_lastName"],
 			"address":["address1","paypalAccountData_address1","/paypalAccountData/address/address1"],
@@ -172,8 +175,9 @@ class PaypalBot():
 			"numero_tarjeta":["cardNumber","cardData_cardNumber","/cardData/cardNumber"],
 			"expiracion":["expiryDate","cardData_expiryDate","/cardData/expiryDate"],
 			"cseguridad":["csc","cardData_csc","/cardData/csc"],
-			"saltar_promocion":["skipPromoteCredit"]
+			"saltar_promocion":["exploreBenefits","skipPromoteCredit"]
 		}
+		#Url comunes de la pagina y registro
 		url_paypal = {
 			"usa":{
 				"registro":"https://www.paypal.com/us/signup/account?Z3JncnB0=",
@@ -185,12 +189,9 @@ class PaypalBot():
 				"formulario_registro":"https://www.paypal.com/signup/create",
 				"aniadir_tarjeta":"https://www.paypal.com/signup/addCard"
 			}
-				
-				
-		
-		
 		}
-		def Buscar_Elemento(nombre,tipo="id"):#Funcion local
+		#Busca elementos en la pagina
+		def Buscar_Elemento(nombre,tipo="id"):
 			""" Si no encuentra un elemento por id busca otro
 				Esta funcion cubre la dinamica del sitio de paypal
 				a la hora de renombrar elementos.
@@ -215,11 +216,8 @@ class PaypalBot():
 		"""Se inicia la automatizacion"""
 		self.Iniciar()
 		pais = datos_usuario["paypal_loc"]
-		
-		
 		self.Ir(url_paypal[pais]["registro"])
 		
-
 		def primero():
 			#1 Elementos formulario inicial
 			caja_email 				=	Buscar_Elemento("email")
@@ -332,6 +330,7 @@ class PaypalBot():
 				"email":datos_usuario["email"],
 				"pass":datos_usuario["passw"]
 				}
+		self.Salir()
 		return cuenta
 
 
