@@ -11,6 +11,10 @@ class Generador_datos():
 	def __init__(self, BIN):
 		self.pass_defecto = "holasoyun"+str(random.randint(100,300))
 		self.datos = {
+					"""Se pueden dejar en None para que se generen automaticamente
+					o añadir un dato por defecto, puede contener "x" para ser reemplazadas
+					por numero aleatorios en casos de direcciones o telefonos
+					"""
 					"firtsName":None,
 					"lastName":None,
 					"address":"405x Havanna Street",
