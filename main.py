@@ -1,14 +1,12 @@
 import os
 import json
-import sqlite3
 import random
+import sqlite3
 from paypal_driver import PaypalBot
 from generador_tarjetas import Generar_tarjeta
 
-
 class Generador_datos():
 	def __init__(self,DATOS):
-		
 		self.datos = DATOS
 		self.generar_datos()
 	
@@ -90,18 +88,7 @@ class Generador_datos():
 					encontrado = True
 			numero_azar+=1
 		return e
-			
-	def crear_paypal(self):
-		input("Presionar enter para comenzar la creacion")
-		archivo_cuentas = None
-		nombre_archivo = "cuenta_creadas.txt"
-		archivo_cuentas = open("cuenta_creadas.txt", "a+") 
-		
-		cuenta = PaypalBot().crear_cuenta(self.datos)
-		print("Cuenta creada:")
-		print(cuenta)
-		archivo_cuentas.writelines("%s:%s\n"%(cuenta["email"], cuenta["pass"]))
-		
+
 
 datos = {
 		"BIN":			"541301xxxxxxxxxx",
@@ -119,6 +106,5 @@ datos = {
 		"paypal_loc":	"usa"
 }
 		
-ini = Generador_datos(datos)
-ini.crear_paypal()
-
+datos = Generador_datos(datos).datos
+paypal_bot = PaypalBot().crear_cuenta(datos)
