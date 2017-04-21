@@ -1,7 +1,9 @@
 from generador_datos import Generador_datos
 from paypal_driver import PaypalBot
 
-
+#Datos de muestra, son opcionales y pueden ser eliminados del
+#diccionario, por ejemplo si quitamos el numero de telefono o la pass, se 
+#genera igual uno aleatorio por defecto
 datos = {
 		"BIN":			"541301xxxxxxxxxx",
 		"address":		"405x Havanna Street",
